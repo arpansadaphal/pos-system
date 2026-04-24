@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes";
+import Product from "./models/Product";
 dotenv.config();
 
 const app = express();
@@ -12,6 +13,20 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+
+app.get("/test", async (req, res) => {
+  const products = await Product.find();
+  res.json(products);
+});
+app.post("/test-product", async (req, res) => {
+  const product = await Product.create({
+    name: "Test Product",
+    category: "Clothing",
+    price: 999,
+  });
+
+  res.json(product);
+});
 
 const PORT = process.env.PORT || 5000;
 
