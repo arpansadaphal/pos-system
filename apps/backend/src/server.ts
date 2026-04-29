@@ -8,7 +8,8 @@ import storeRoutes from "./routes/storeRoutes";
 // import Product from "./models/Product";
 
 dotenv.config();
-
+console.log("REDIS_URL:", process.env.REDIS_URL);
+console.log("REDIS_TOKEN:", process.env.REDIS_TOKEN);
 const app = express();
 app.use(express.json());
 
