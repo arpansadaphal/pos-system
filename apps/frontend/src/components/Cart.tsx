@@ -2,7 +2,7 @@ import { useCartStore } from "../store/cartStore";
 
 const Cart = () => {
   const items = useCartStore((state) => state.items);
-  const updateQuantity = useCartStore((state) => state.addItem);
+  // const updateQuantity = useCartStore((state) => state.addItem);
   const total = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0

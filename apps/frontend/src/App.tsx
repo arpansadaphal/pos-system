@@ -1,14 +1,19 @@
-import './App.css'
-import POS from './pages/POS'
+import { useEffect } from "react";
+import { useAuthStore } from "./store/authStore";
+import POS from "./pages/POS";
+import Login from "./pages/Login";
 
 function App() {
-  
-localStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZWJhN2MzMzI0OWFjYmIyNDBiODUwZSIsInJvbGUiOiJDQVNISUVSIiwiaWF0IjoxNzc3NDU3ODI5LCJleHAiOjE3Nzc1NDQyMjl9.JmawOuzFANUvsFxsMVOdOinikgLHlbpx97HVWLrS27U");
-  return (
-    <>
-     <POS/>
-    </>
-  )
+  const { token, initialize } = useAuthStore();
+
+  useEffect(() => {
+    initialize();
+  }, []);
+
+  // 🔐 simple route protection
+  if (!token) return <Login />;
+
+  return <POS />;
 }
 
-export default App
+export default App;

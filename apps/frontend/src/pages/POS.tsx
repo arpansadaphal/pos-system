@@ -3,6 +3,9 @@ import api from "../api/axios";
 import { useCartStore } from "../store/cartStore";
 import Cart from "../components/Cart";
 import { decodeToken } from "../utils/decodeToken";
+import { useAuthStore } from "../store/authStore";
+
+
 
 const POS = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -11,7 +14,8 @@ const POS = () => {
   const user = token ? decodeToken(token) : null;
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const logout = useAuthStore((state) => state.logout);
+  
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -67,7 +71,7 @@ return (
     <h1>POS Terminal</h1>
     {loading && <p>Loading...</p>}
     <div style={{ display: "flex", gap: "20px" }}>
-
+  
       {/* LEFT: PRODUCTS */}
       <div style={{ flex: 2 }}>
 
@@ -115,7 +119,7 @@ return (
         >
           Checkout
         </button>
-
+        <button onClick={logout}>Logout</button>
       </div>
 
     </div>
