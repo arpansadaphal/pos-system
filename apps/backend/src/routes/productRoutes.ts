@@ -2,6 +2,7 @@ import express from "express";
 import { protect } from "../middleware/authMiddleware";
 import { authorize } from "../middleware/rbac";
 import { createProduct, getProducts } from "../controllers/productController";
+import Product from "../models/Product";
 
 const router = express.Router();
 

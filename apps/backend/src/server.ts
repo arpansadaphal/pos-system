@@ -1,16 +1,27 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import cors from "cors";
 import authRoutes from "./routes/authRoutes";
 import productRoutes from "./routes/productRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import storeRoutes from "./routes/storeRoutes";
 // import Product from "./models/Product";
 
+
 dotenv.config();
-console.log("REDIS_URL:", process.env.REDIS_URL);
-console.log("REDIS_TOKEN:", process.env.REDIS_TOKEN);
+// console.log("REDIS_URL:", process.env.REDIS_URL);
+// console.log("REDIS_TOKEN:", process.env.REDIS_TOKEN);
 const app = express();
+
+app.use(
+  cors({
+    origin: "*", // allow all (for now)
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
