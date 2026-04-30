@@ -43,21 +43,30 @@ const clearCart = useCartStore((state) => state.clearCart);
 
 const checkout = async () => {
   try {
-   await api.post("/orders", {
-  storeId: "69ef2509033050635be1a588", // keep for now
-  cashierId: user?.id,
-  items: items.map((item) => ({
-    productId: item.productId,
-    quantity: item.quantity,
-    price: item.price,
-  })),
-});
+    if (!user?.id) {
+      alert("User not loaded");
+      return;
+    }
+
+    if (items.length === 0) {
+      alert("Cart is empty");
+      return;
+    }
+
+    await api.post("/orders", {
+      storeId: "69ef2509033050635be1a588",
+      cashierId: user.id,
+      items: items.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+    });
 
     clearCart();
     alert("Order placed successfully!");
-  } catch (err) {
-    console.error(err);
-    alert("Checkout failed");
+  } catch (err: any) {
+    alert(err?.response?.data?.message || "Checkout failed");
   }
 };
 useEffect(() => {

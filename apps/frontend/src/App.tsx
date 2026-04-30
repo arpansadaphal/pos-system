@@ -1,19 +1,72 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuthStore } from "./store/authStore";
-import POS from "./pages/POS";
+
 import Login from "./pages/Login";
+import POS from "./pages/POS";
+import Products from "./pages/Products";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Layout from "./components/Layout";
 
 function App() {
-  const { token, initialize } = useAuthStore();
+  const { initialize } = useAuthStore();
 
   useEffect(() => {
     initialize();
   }, []);
 
-  // 🔐 simple route protection
-  if (!token) return <Login />;
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Public */}
+        <Route path="/login" element={<Login />} />
 
-  return <POS />;
+        {/* Protected Layout */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          
+          <Route path="/" element={<POS />} />
+          {/* <Route path="/products" element={<Products />} /> */}
+          <Route
+          path="/products"
+          element={
+            <ProtectedRoute roles={["ADMIN", "MANAGER"]}>
+              <Products />
+            </ProtectedRoute>
+          }
+        />
+        </Route>
+
+        {/* fallback */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
+
+// import { useEffect } from "react";
+// import { useAuthStore } from "./store/authStore";
+// import POS from "./pages/POS";
+// import Login from "./pages/Login";
+
+// function App() {
+//   const { token, initialize } = useAuthStore();
+
+//   useEffect(() => {
+//     initialize();
+//   }, []);
+
+//   // 🔐 simple route protection
+//   if (!token) return <Login />;
+
+//   return <POS />;
+// }
+
+// export default App;

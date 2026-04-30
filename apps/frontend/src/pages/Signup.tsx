@@ -1,19 +1,24 @@
 import { useState } from "react";
 import api from "../api/axios";
 import { useAuthStore } from "../store/authStore";
+import { useNavigate } from "react-router-dom";
 import Login from "./Login";
+
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [debug, setDebug] = useState<any>(null);
-    const [goLogin, setGoLogin] = useState(false);
-  const setToken = useAuthStore((state) => state.setToken);
+  const [goLogin, setGoLogin] = useState(false);
+
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const navigate = useNavigate();
 
   const handleSignup = async () => {
     try {
       setDebug("Creating user...");
 
+      // 1. Signup
       await api.post("/auth/signup", {
         name,
         email,
@@ -22,13 +27,32 @@ const Signup = () => {
 
       setDebug("Signup success → logging in...");
 
-      // 🔥 Auto login after signup
+      // 2. Login
       const res = await api.post("/auth/login", {
         email,
         password,
       });
 
-      setToken(res.data.token || res.data); // supports both formats
+      // 🔥 DEBUG RESPONSE
+      setDebug({
+        step: "login response",
+        data: res.data,
+      });
+
+      // 3. Validate response
+      if (!res.data?.token) {
+        setDebug("No token received from login");
+        return;
+      }
+
+      // 4. Save auth
+      setAuth(res.data.token, res.data.user);
+
+      setDebug("Login success → redirecting");
+
+      // 5. Redirect
+      navigate("/");
+      
     } catch (err: any) {
       setDebug({
         error: err.message,
@@ -36,9 +60,11 @@ const Signup = () => {
       });
     }
   };
-if (goLogin) {
-  return <Login />;
-}
+
+  if (goLogin) {
+    return <Login />;
+  }
+
   return (
     <div>
       <h2>Signup</h2>
@@ -63,9 +89,11 @@ if (goLogin) {
       />
 
       <button onClick={handleSignup}>Signup</button>
-    <button onClick={() => setGoLogin(true)}>
-  Back to Login
-</button>
+
+      <button onClick={() => setGoLogin(true)}>
+        Back to Login
+      </button>
+
       {/* <pre>{JSON.stringify(debug, null, 2)}</pre> */}
     </div>
   );
