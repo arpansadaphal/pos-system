@@ -44,7 +44,7 @@ export const login = async (req: Request, res: Response) => {
       process.env.JWT_SECRET as string,
       { expiresIn: "1d" }
     );
-
+    // console.log("Generated token:", token); // 🔥 DEBUGGING
     // ✅ BEST PRACTICE RESPONSE
     res.json({
       token,

@@ -8,6 +8,7 @@ import Products from "./pages/Products";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import Orders from "./pages/Orders";
+import Inventory from "./pages/Inventory";
 
 function App() {
   const { initialize } = useAuthStore();
@@ -33,6 +34,7 @@ function App() {
           
           <Route path="/" element={<POS />} />
           <Route path="/orders" element={<Orders />} />
+          <Route path="/inventory" element={<Inventory />} />
           {/* <Route path="/products" element={<Products />} /> */}
           <Route
           path="/products"

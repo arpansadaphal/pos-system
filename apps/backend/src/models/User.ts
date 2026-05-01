@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema(
       enum: ["CASHIER", "MANAGER", "ADMIN"],
       default: "CASHIER",
     },
+    
   },
   { timestamps: true }
 );

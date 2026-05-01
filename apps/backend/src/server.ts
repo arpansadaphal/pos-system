@@ -7,6 +7,7 @@ import productRoutes from "./routes/productRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import storeRoutes from "./routes/storeRoutes";
 import orderItemRoutes from "./routes/orderItemRoutes";
+import inventoryRoutes from "./routes/inventoryRoutes";
 // import Product from "./models/Product";
 
 
@@ -34,9 +35,10 @@ app.use("/api/products", productRoutes);
 app.use("/api/stores", storeRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/order-items", orderItemRoutes);
-// app.use("/api/order-items", (req, res) => {
-//   res.send("HIT");
-// });
+app.use("/api/inventory", inventoryRoutes);
+
+
+
 // app.get("/test", async (req, res) => {
 //   const products = await Product.find();
 //   res.json(products);
