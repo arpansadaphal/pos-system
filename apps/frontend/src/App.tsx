@@ -7,6 +7,7 @@ import POS from "./pages/POS";
 import Products from "./pages/Products";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
+import Orders from "./pages/Orders";
 
 function App() {
   const { initialize } = useAuthStore();
@@ -20,7 +21,7 @@ function App() {
       <Routes>
         {/* Public */}
         <Route path="/login" element={<Login />} />
-
+       
         {/* Protected Layout */}
         <Route
           element={
@@ -31,6 +32,7 @@ function App() {
         >
           
           <Route path="/" element={<POS />} />
+          <Route path="/orders" element={<Orders />} />
           {/* <Route path="/products" element={<Products />} /> */}
           <Route
           path="/products"

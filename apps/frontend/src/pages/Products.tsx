@@ -15,6 +15,8 @@ const Products = () => {
     fetchProducts();
   }, []);
 
+  
+
   const createProduct = async () => {
     await api.post("/products", {
       name,

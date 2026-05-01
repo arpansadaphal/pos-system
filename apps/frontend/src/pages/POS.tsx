@@ -69,8 +69,13 @@ const checkout = async () => {
     alert(err?.response?.data?.message || "Checkout failed");
   }
 };
+
 useEffect(() => {
-  fetchProducts();
+  const delay = setTimeout(() => {
+    fetchProducts();
+  }, 100);
+
+  return () => clearTimeout(delay);
 }, [search]);
 
 
@@ -91,7 +96,7 @@ return (
           onChange={(e) => setSearch(e.target.value)}
           style={{ width: "100%", marginBottom: "10px" }}
         />
-
+        
         {/* Product List */}
         {products.map((p: any) => (
           <div key={p._id} style={{ borderBottom: "1px solid #ccc", padding: "8px 0" }}>
@@ -122,12 +127,12 @@ return (
         <Cart />
 
         {/* Checkout Button */}
-        <button
-          onClick={checkout}
-          style={{ marginTop: "10px", width: "100%" }}
-        >
-          Checkout
-        </button>
+       <button
+        onClick={checkout}
+        disabled={items.length === 0}
+      >
+        Checkout
+      </button>
         <button onClick={logout}>Logout</button>
       </div>
 
