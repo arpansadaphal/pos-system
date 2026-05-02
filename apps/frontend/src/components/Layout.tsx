@@ -18,6 +18,16 @@ const Layout = () => {
           <Link to="/products">Products</Link><br />
           <Link to="/orders">Orders</Link><br />
           <Link to="/inventory">Inventory</Link><br />
+          {user?.role === "ADMIN" && (
+            <>
+              <Link to="/stores">Stores</Link><br />
+            </>
+          )}
+          {(user?.role === "ADMIN" || user?.role === "MANAGER") && (
+            <>
+              <Link to="/users">Users</Link><br />
+            </>
+          )}
         </nav>
 
         <button onClick={logout} style={{ marginTop: "20px" }}>

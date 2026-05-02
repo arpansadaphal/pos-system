@@ -2,6 +2,7 @@ import mongoose from "mongoose"
 import Order from "../models/Order";
 import OrderItem from "../models/OrderItem";
 import InventoryLedger from "../models/InventoryLedger";
+import { getStockService } from "./inventoryService";
 import { error } from "node:console";
 
 export const createOrderService = async (data: any) => {
@@ -27,38 +28,84 @@ export const createOrderService = async (data: any) => {
         let totalAmount = 0;
 
         //process each item
-        for(const item of items){
-            const {productId, price, quantity} = item;
-            console.log("Processing item:", item);
-            totalAmount += quantity * price;
+    //     for(const item of items){
+    //         const {productId, price, quantity} = item;
+    //         console.log("Processing item:", item);
+    //         totalAmount += quantity * price;
 
-            if(quantity <= 0){
-                throw new Error("Invalid quantity");
-            }
+    //         if(quantity <= 0){
+    //             throw new Error("Invalid quantity");
+    //         }
             
-        //create order item
+    //     //create order item
+    //     await OrderItem.create(
+    //         [
+    //             {
+    //                 orderId: orderDoc._id,
+    //                 productId,
+    //                 quantity,
+    //                 price,
+    //             }
+    //         ], {session}
+    //     );
+
+    //     const currentStock = await getStockService(productId, storeId, session);
+
+    //     if (currentStock < quantity) {
+    //     throw new Error("Insufficient stock");
+    //     }
+
+    //     //log inventory change
+    //     await InventoryLedger.create(
+    //         [
+    //             {
+    //                 productId,
+    //                 storeId,
+    //                 change: -quantity,
+    //                 type: "SALE",
+    //             }
+    //         ], {session}
+    //     );
+    // }
+    for (const item of items) {
+        const { productId, price, quantity } = item;
+
+        if (quantity <= 0) {
+            throw new Error("Invalid quantity");
+        }
+
+        const currentStock = await getStockService(productId, storeId, session);
+
+        if (currentStock < quantity) {
+            throw new Error("Insufficient stock");
+        }
+
+        totalAmount += quantity * price;
+
         await OrderItem.create(
             [
-                {
-                    orderId: orderDoc._id,
-                    productId,
-                    quantity,
-                    price,
-                }
-            ], {session}
+            {
+                orderId: orderDoc._id,
+                productId,
+                quantity,
+                price,
+            },
+            ],
+            { session }
         );
-        //log inventory change
+
         await InventoryLedger.create(
             [
-                {
-                    productId,
-                    storeId,
-                    change: -quantity,
-                    type: "SALE",
-                }
-            ], {session}
+            {
+                productId,
+                storeId,
+                change: -quantity,
+                type: "SALE",
+            },
+            ],
+            { session }
         );
-    }
+        }
 
         // update total
         

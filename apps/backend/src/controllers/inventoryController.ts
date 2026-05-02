@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getInventoryLogsService, getInventorySummaryService } from "../services/inventoryService";
+import { getInventoryLogsService, getInventorySummaryService, restockService } from "../services/inventoryService";
 
 export const getInventoryLogs = async (req: Request, res: Response) => {
   try {
@@ -19,4 +19,17 @@ export const getInventorySummary = async (req: Request, res: Response)=> {
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch summary" });
   }
+};
+
+export const restock = async (req: Request, res: Response) => {
+  try {
+    const result = await restockService(req.body);
+    res.json(result);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+        res.status(500).json({ message: err.message });
+    } else {
+        res.status(500).json({ message: "Something went wrong" });
+    }
+    }
 };

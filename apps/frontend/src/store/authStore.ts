@@ -1,9 +1,15 @@
 import { create } from "zustand";
 
+// interface User {
+//   id: string;
+//   email: string;
+//   role: string;
+// }
 interface User {
   id: string;
   email: string;
   role: string;
+  storeId?: string;
 }
 
 interface AuthState {

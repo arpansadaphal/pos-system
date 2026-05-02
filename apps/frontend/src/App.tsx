@@ -9,6 +9,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import Orders from "./pages/Orders";
 import Inventory from "./pages/Inventory";
+import Stores from "./pages/stores";
+import Users from "./pages/Users";
 
 function App() {
   const { initialize } = useAuthStore();
@@ -36,6 +38,22 @@ function App() {
           <Route path="/orders" element={<Orders />} />
           <Route path="/inventory" element={<Inventory />} />
           {/* <Route path="/products" element={<Products />} /> */}
+          <Route
+            path="/stores"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <Stores />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <Users />
+              </ProtectedRoute>
+            }
+          />
           <Route
           path="/products"
           element={

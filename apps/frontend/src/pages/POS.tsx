@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../api/axios";
 import { useCartStore } from "../store/cartStore";
 import Cart from "../components/Cart";
-import { decodeToken } from "../utils/decodeToken";
+// import { decodeToken } from "../utils/decodeToken";
 import { useAuthStore } from "../store/authStore";
 
 
@@ -10,8 +10,7 @@ import { useAuthStore } from "../store/authStore";
 const POS = () => {
   const [products, setProducts] = useState<any[]>([]);
   const addItem = useCartStore((state) => state.addItem);
-  const token = localStorage.getItem("token");
-  const user = token ? decodeToken(token) : null;
+  const user = useAuthStore((state) => state.user);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const logout = useAuthStore((state) => state.logout);
@@ -54,7 +53,8 @@ const checkout = async () => {
     }
 
     await api.post("/orders", {
-      storeId: "69ef2509033050635be1a588",
+     
+      storeId: user?.storeId,
       cashierId: user.id,
       items: items.map((item) => ({
         productId: item.productId,

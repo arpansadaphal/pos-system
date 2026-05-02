@@ -3,6 +3,7 @@ import api from "../api/axios";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
 import Signup from "./Signup";
+import { decodeToken } from "../utils/decodeToken";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -12,32 +13,31 @@ const Login = () => {
   const setAuth = useAuthStore((state) => state.setAuth);
   const navigate = useNavigate();
 
- const handleLogin = async () => {
-  // alert("Login clicked");
 
+
+const handleLogin = async () => {
   try {
     const res = await api.post("/auth/login", {
       email,
       password,
     });
 
-    // alert("API success");
-
-    // ✅ FIX: res.data is the token itself
-    const token = res.data;
+    const token = res.data.token;
 
     if (!token) {
       alert("No token returned");
       return;
     }
 
-    // setToken(res.data.token, res.data.user);
-    setAuth(res.data.token, res.data.user);
-    // alert("Token set, redirecting...");
+    // 🔥 decode token
+    const decodedUser = decodeToken(token);
+
+    // 🔥 store both
+    setAuth(token, decodedUser);
 
     navigate("/");
   } catch (err: any) {
-    alert("Login failed");
+    alert(err?.response?.data || "Login failed");
   }
 };
 

@@ -10,7 +10,11 @@ const userSchema = new mongoose.Schema(
       enum: ["CASHIER", "MANAGER", "ADMIN"],
       default: "CASHIER",
     },
-    
+    storeId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Store",
+}
+
   },
   { timestamps: true }
 );

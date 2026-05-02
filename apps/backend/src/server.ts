@@ -8,6 +8,7 @@ import orderRoutes from "./routes/orderRoutes";
 import storeRoutes from "./routes/storeRoutes";
 import orderItemRoutes from "./routes/orderItemRoutes";
 import inventoryRoutes from "./routes/inventoryRoutes";
+import userRoutes from "./routes/userRoutes";
 // import Product from "./models/Product";
 
 
@@ -36,7 +37,7 @@ app.use("/api/stores", storeRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/order-items", orderItemRoutes);
 app.use("/api/inventory", inventoryRoutes);
-
+app.use("/api/users", userRoutes);
 
 
 // app.get("/test", async (req, res) => {

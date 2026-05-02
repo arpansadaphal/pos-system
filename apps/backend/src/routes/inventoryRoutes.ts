@@ -1,5 +1,5 @@
 import express from "express";
-import { getInventoryLogs, getInventorySummary} from "../controllers/inventoryController";
+import { getInventoryLogs, getInventorySummary, restock} from "../controllers/inventoryController";
 import { protect } from "../middleware/authMiddleware";
 import { authorize } from "../middleware/rbac";
 
@@ -19,5 +19,7 @@ router.get(
   authorize("MANAGER", "ADMIN"),
   getInventorySummary
 );
+
+router.post("/restock", protect, authorize("ADMIN", "MANAGER"), restock);
 
 export default router;
