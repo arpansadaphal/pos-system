@@ -11,10 +11,13 @@ const userSchema = new mongoose.Schema(
       default: "CASHIER",
     },
     storeId: {
-  type: mongoose.Schema.Types.ObjectId,
-  ref: "Store",
-}
-
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Store",
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

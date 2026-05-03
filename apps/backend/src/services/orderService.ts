@@ -8,6 +8,12 @@ import { error } from "node:console";
 export const createOrderService = async (data: any) => {
     const session = await mongoose.startSession();
     session.startTransaction();
+
+    // const user = await User.findById(cashierId);
+
+    //     if (!user?.isActive) {
+    //     throw new Error("User is inactive");
+    //     }
     
     try{
         const {items, storeId, cashierId} = data;

@@ -162,16 +162,30 @@ const createUser = async () => {
 
           {/* Status (placeholder for now) */}
           <td style={td}>
-            <span style={{ color: "green" }}>Active</span>
+            <span style={{ color: u.isActive ? "green" : "red" }}>
+              {u.isActive ? "Active" : "Inactive"}
+            </span>
           </td>
-              {/* <button
-              onClick={async () => {
-                await api.delete(`/users/${u._id}`);
-                fetchUsers();
-              }}
-            >
-              Delete
-            </button> */}
+            <button
+  onClick={async () => {
+  try {
+    // alert("Calling API...");
+
+const res = await api.patch(`/users/${u._id}/toggle`);
+
+//    alert(JSON.stringify({
+//   status: res.status,
+// })); // 🔥 FULL RESPONSE
+
+    fetchUsers();
+  } catch (err: any) {
+    alert(JSON.stringify(err?.response?.data || err.message));
+  }
+}}
+>
+  {u.isActive ? "Deactivate" : "Activate"}
+</button>
+
         </tr>
       ))}
     </tbody>

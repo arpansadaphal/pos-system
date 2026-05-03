@@ -38,6 +38,9 @@ export const login = async (req: Request, res: Response) => {
 
     const user = await User.findOne({ email });
     if (!user) return res.status(404).send("User not found");
+    if (!user.isActive) {
+      return res.status(403).json({ message: "User is deactivated" });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password as string);
     if (!isMatch) return res.status(400).send("Invalid credentials");
@@ -71,6 +74,8 @@ export const login = async (req: Request, res: Response) => {
     res.status(500).json({ message: "login failed", error });
   }
 };
+
+
 
 // export const login = async (req: Request, res: Response) => {
 //    try {
