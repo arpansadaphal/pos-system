@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuthStore } from "./store/authStore";
-
+import { useNetworkStore } from "./store/networkStore";
 import Login from "./pages/Login";
 import POS from "./pages/POS";
 import Products from "./pages/Products";
@@ -12,8 +12,23 @@ import Inventory from "./pages/Inventory";
 import Stores from "./pages/stores";
 import Users from "./pages/Users";
 
+
 function App() {
   const { initialize } = useAuthStore();
+  const setOnline = useNetworkStore((s) => s.setOnline);
+
+  useEffect(() => {
+    const goOnline = () => setOnline(true);
+    const goOffline = () => setOnline(false);
+
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+
+    return () => {
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
+    };
+  }, []);
 
   useEffect(() => {
     initialize();
