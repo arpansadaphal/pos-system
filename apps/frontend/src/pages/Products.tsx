@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
+import { useAuthStore } from "../store/authStore";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [initialStock, setInitialStock] = useState("");
+  
+  const user = useAuthStore((state) => state.user);
 
   const fetchProducts = async () => {
     const res = await api.get("/products");
@@ -19,26 +23,54 @@ const Products = () => {
   
 
   const createProduct = async () => {
+  try {
+    if (!name || !price) {
+      alert("Name and price required");
+      return;
+    }
+
+    if (!user?.storeId) {
+      alert("User storeId missing");
+      return;
+    }
+
     await api.post("/products", {
+      name,
+      price: Number(price),
+      storeId: user.storeId,
+      initialStock: Number(initialStock || 0),
+    });
+
+    alert("Product created");
+
+    setName("");
+    setPrice("");
+    setInitialStock("");
+
+    fetchProducts();
+  } catch (err: any) {
+    alert(err?.response?.data?.message || "Create failed");
+  }
+};
+
+
+  const updateProduct = async (id: string) => {
+  try {
+    await api.put(`/products/${id}`, {
       name,
       price: Number(price),
     });
 
+    alert("Updated");
+
+    setEditingId(null);
     setName("");
     setPrice("");
+
     fetchProducts();
-  };
-
-  const updateProduct = async (id: string) => {
-  await api.put(`/products/${id}`, {
-    name,
-    price: Number(price),
-  });
-
-  setEditingId(null);
-  setName("");
-  setPrice("");
-  fetchProducts();
+  } catch (err: any) {
+    alert(err?.response?.data?.message || "Update failed");
+  }
 };
 
 const deleteProduct = async (id: string) => {
@@ -61,7 +93,11 @@ const deleteProduct = async (id: string) => {
         value={price}
         onChange={(e) => setPrice(e.target.value)}
       />
-
+      <input
+        placeholder="Initial Stock"
+        value={initialStock}
+        onChange={(e) => setInitialStock(e.target.value)}
+      />
       <button onClick={createProduct}>Add</button>
 
       <hr />
@@ -98,6 +134,9 @@ const deleteProduct = async (id: string) => {
         <button onClick={() => deleteProduct(p._id)}>
           Delete
         </button>
+        {/* <p>User Store: {user?.storeId || "NO STORE ID"}</p> */}
+        {/* <p>User: {JSON.stringify(user)}</p> */}
+        {/* <p>{user?.storeId}</p> */}
       </>
     )}
   </div>

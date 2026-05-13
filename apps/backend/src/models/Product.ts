@@ -3,7 +3,12 @@ import mongoose from "mongoose";
 const variantSchema = new mongoose.Schema({
   size: String,
   color: String,
-  sku: { type: String, unique: true },
+  sku: { type: String, unique: true, sparse: true },
+//   sku: {
+//   type: String,
+//   unique: true,
+//   sparse: true, 
+// },
 });
 
 const productSchema = new mongoose.Schema(

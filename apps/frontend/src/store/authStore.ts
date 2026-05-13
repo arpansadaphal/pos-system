@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { decodeToken } from "../utils/decodeToken";
 
 // interface User {
 //   id: string;
@@ -39,18 +40,33 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ token: null, user: null });
   },
 
-  initialize: () => {
-    const token = localStorage.getItem("token");
-    const user = localStorage.getItem("user");
+  // initialize: () => {
+  //   const token = localStorage.getItem("token");
+  //   const user = localStorage.getItem("user");
 
-    if (token && user) {
-      set({
-        token,
-        user: JSON.parse(user),
-      });
-    }
-  },
-}));
+  //   if (token && user) {
+  //     set({
+  //       token,
+  //       user: JSON.parse(user),
+  //     });
+  //   }
+  // },
+initialize: () => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    const decoded = decodeToken(token);
+
+    set({
+      token,
+      user: decoded, // ✅ ALWAYS from JWT
+    });
+  }
+}
+  
+}
+
+));
 
 // import { create } from "zustand";
 

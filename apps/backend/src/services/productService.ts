@@ -1,8 +1,26 @@
 import Product from "../models/Product"
 
+// export const createProductService = async (data: any) => {
+//     return await Product.create(data);
+// }
+
 export const createProductService = async (data: any) => {
-    return await Product.create(data);
-}
+  const { name, price, storeId, initialStock = 0 } = data;
+
+  const product = await Product.create({ name, price });
+
+  // 🔥 Add initial stock entry
+  if (initialStock > 0) {
+    await InventoryLedger.create({
+      productId: product._id,
+      storeId,
+      change: initialStock,
+      type: "RESTOCK",
+    });
+  }
+
+  return product;
+};
 
 // export const getProductsService = async () => {
 //     return await Product.find();
@@ -33,6 +51,7 @@ export const createProductService = async (data: any) => {
 
 //with redis
 import { getRedisClient } from "../config/redis";
+import InventoryLedger from "../models/InventoryLedger";
 // import Product from "../models/Product";
 
 export const getProductsService = async (query: any) => {
@@ -64,4 +83,31 @@ export const getProductsService = async (query: any) => {
   await redis.set(cacheKey, products, { ex: 60 });
 
   return products;
+};
+
+export const updateProductService = async (
+  id: string,
+  data: any
+) => {
+  const product = await Product.findByIdAndUpdate(
+    id,
+    data,
+    { new: true }
+  );
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  return product;
+};
+
+export const deleteProductService = async (id: string) => {
+  const product = await Product.findByIdAndDelete(id);
+
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  return { message: "Product deleted" };
 };
