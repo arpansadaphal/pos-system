@@ -23,6 +23,7 @@ export const protect = (req: any, res: any, next: any) => {
 
   // const token = authHeader.split(" ")[1]; // 🔥 IMPORTANT
   const token = req.headers.authorization?.split(" ")[1];
+  console.log("Extracted token:", token); // 🔥 DEBUGGING
   
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
