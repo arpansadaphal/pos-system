@@ -20,7 +20,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://sturdy-pancake-969qvv4p4xxq37r45-5000.app.github.dev/api",
+  baseURL: "http://localhost:5001/api",
 });
 
 api.interceptors.request.use((config) => {

@@ -9,5 +9,7 @@ const router = express.Router();
 router.post("/", protect, authorize("ADMIN"), createUser);
 router.get("/", protect, authorize("ADMIN"), getUsers);
 router.patch("/:id/toggle", protect, authorize("ADMIN"), toggleUserStatus);
+// router.get("/store/:storeId", protect, authorize("ADMIN"), getUsersByStore);
+;
 
 export default router;

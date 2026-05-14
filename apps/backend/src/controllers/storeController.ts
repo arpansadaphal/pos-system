@@ -28,3 +28,4 @@ export const getStores = async (req: Request, res: Response) => {
     }
 }
 };
+

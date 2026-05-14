@@ -87,6 +87,7 @@ export const getStockService = async (
     ],
     { session }
   );
+  console.log("checking stock for productId:", productId, "storeId:", storeId, "result:", result);
 
   return result[0]?.total || 0;
 };

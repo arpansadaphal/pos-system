@@ -52,13 +52,15 @@ export const createProductService = async (data: any) => {
 //with redis
 import { getRedisClient } from "../config/redis";
 import InventoryLedger from "../models/InventoryLedger";
+import mongoose from "mongoose";
 // import Product from "../models/Product";
 
 export const getProductsService = async (query: any) => {
   const redis = getRedisClient(); // ✅ inside function
 
-  const { search = "", limit = 10 } = query;
-  const cacheKey = `products:${search}:${limit}`;
+  const { search = "", storeId, limit = 10 } = query;
+  // const cacheKey = `products:${search}:${limit}`;
+  const cacheKey = `products:${storeId}:${search}:${limit}`;
 
   // 1. Check cache
   const cached = await redis.get(cacheKey);
@@ -77,7 +79,53 @@ export const getProductsService = async (query: any) => {
     filter.$text = { $search: search };
   }
 
-  const products = await Product.find(filter).limit(Number(limit));
+  // const products = await Product.find(filter).limit(Number(limit));
+  
+  const products = await Product.aggregate([
+  {
+    $match: filter,
+  },
+
+  {
+    $lookup: {
+      from: "inventoryledgers",
+      let: { productId: "$_id" },
+
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $and: [
+                { $eq: ["$productId", "$$productId"] },
+
+                {
+                  $eq: [
+                    "$storeId",
+                    new mongoose.Types.ObjectId(storeId),
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      ],
+
+      as: "inventory",
+    },
+  },
+
+  {
+    $addFields: {
+      stock: {
+        $sum: "$inventory.change",
+      },
+    },
+  },
+
+  {
+    $limit: Number(limit),
+  },
+]);
 
   // 3. Store in cache
   await redis.set(cacheKey, products, { ex: 60 });

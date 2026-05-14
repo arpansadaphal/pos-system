@@ -75,3 +75,21 @@ export const toggleUserStatus = async (req: Request, res: Response) => {
     }
 }
 };
+
+// export const getUsersByStore = async (req: Request, res: Response) => {
+//   try {
+//     const { storeId } = req.params;
+
+//     const users = await User.find({ storeId })
+//       .select("-password")
+//       .populate("storeId", "name");
+
+//     res.json(users);
+//   } catch (err: unknown) {
+//     if (err instanceof Error) {
+//         res.status(500).json({ message: err.message });
+//     } else {
+//         res.status(500).json({ message: "Something went wrong" });
+//     }
+// }
+// };
