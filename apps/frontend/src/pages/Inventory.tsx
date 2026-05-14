@@ -1,171 +1,78 @@
-import api from "../api/axios";
-import { useEffect, useState } from "react";
-import type { CSSProperties } from "react";
+import { Navigate } from "react-router-dom";
+import { ShieldAlert, LockKeyhole } from "lucide-react";
+import { useAuthStore } from "../store/authStore";
 
-const th: CSSProperties = {
-  borderBottom: "2px solid #ccc",
-  textAlign: "left",
-  padding: "8px",
-};
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  roles?: string[];
+}
 
-const td: CSSProperties = {
-  borderBottom: "1px solid #eee",
-  padding: "8px",
-};
+const ProtectedRoute = ({
+  children,
+  roles,
+}: ProtectedRouteProps) => {
+  const { token, user } = useAuthStore();
 
-const card: CSSProperties = {
-  border: "1px solid #ccc",
-  padding: "10px",
-  borderRadius: "6px",
-  width: "150px",
-};
+  // Prevent redirect before auth loads
+  if (token === undefined) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white shadow-lg rounded-2xl p-8 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mx-auto"></div>
 
-const logRow: CSSProperties = {
-  display: "flex",
-  justifyContent: "space-between",
-  borderBottom: "1px solid #eee",
-  padding: "8px 0",
-};
-
-const Inventory = () => {
-  const [view, setView] = useState<"logs" | "summary">("logs");
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  // 🔄 Fetch data based on view
-  const fetchData = async () => {
-    setLoading(true);
-
-    try {
-      const endpoint =
-        view === "logs" ? "/inventory" : "/inventory/summary";
-
-      const res = await api.get(endpoint);
-      setData(res.data);
-    } catch (err: any) {
-      console.error(err);
-      alert(err?.response?.data?.message || "Failed to fetch inventory");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [view]);
-
-  
-
-  return (
-    <div>
-      <h2>Inventory</h2>
-
-      {/* 🔘 Toggle Buttons */}
-      <div style={{ marginBottom: "15px" }}>
-        <button
-          onClick={() => setView("logs")}
-          disabled={view === "logs"}
-          style={{ marginRight: "10px" }}
-        >
-          Logs
-        </button>
-
-        <button
-          onClick={() => setView("summary")}
-          disabled={view === "summary"}
-        >
-          Current Stock
-        </button>
+          <p className="mt-4 text-gray-600 text-lg font-medium">
+            Loading...
+          </p>
+        </div>
       </div>
+    );
+  }
 
-      {/* ⏳ Loading */}
-      {loading && <p>Loading...</p>}
+  // Redirect if not logged in
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
 
-      {/* 📜 Logs View */}
-  {view === "logs" && !loading && (
-  <div>
-    <h3>Transaction History</h3>
+  // Unauthorized Access
+  if (roles && !roles.includes(user?.role || "")) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-red-100">
+        <div className="bg-white shadow-2xl rounded-3xl p-10 max-w-md text-center">
+          
+          <div className="flex justify-center mb-4">
+            <div className="bg-red-100 p-4 rounded-full">
+              <ShieldAlert
+                size={50}
+                className="text-red-500"
+              />
+            </div>
+          </div>
 
-    {data.map((log: any) => (
-      <div key={log._id} style={logRow}>
-        <strong>{log.productId?.name}</strong>
+          <h1 className="text-3xl font-bold text-gray-800">
+            Access Denied
+          </h1>
 
-        <span>
-          {log.type === "SALE" ? "🔻 Sold" : "🔺 Restocked"}
-        </span>
+          <p className="text-gray-500 mt-3 leading-relaxed">
+            You do not have permission to access this page.
+          </p>
 
-        <span>{log.change}</span>
+          <div className="mt-6 flex items-center justify-center gap-2 text-red-500 font-semibold">
+            <LockKeyhole size={18} />
+            Unauthorized Access
+          </div>
 
-        <span>
-          {new Date(log.createdAt).toLocaleString()}
-        </span>
+          <button
+            onClick={() => window.history.back()}
+            className="mt-8 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-semibold transition duration-200"
+          >
+            Go Back
+          </button>
+        </div>
       </div>
-    ))}
-  </div>
-)}
-    <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
-  
-  <div style={card}>
-    <h4>Total Products</h4>
-    <p>{data.length}</p>
-  </div>
+    );
+  }
 
-  {/* <div style={card}>
-  <h4>Total Sales</h4>
-  <p>
-  {Array.isArray(data)
-    ? data.reduce(
-        (sum, item) => sum + (item.totalSales || 0),
-        0
-      )
-    : 0}
-</p>
-</div> */}
-
-</div>
-      {/* 📊 Summary View */}
-   {view === "summary" && !loading && (
-  <div>
-    <h3>Inventory Overview</h3>
-
-    <table style={{ width: "100%", borderCollapse: "collapse" }}>
-      <thead>
-        <tr>
-          <th style={th}>Product</th>
-          <th style={th}>Stock</th>
-          <th style={th}>Sales</th>
-          <th style={th}>Last Updated</th>
-          <th style={th}>Stock status</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        {data.map((item: any, index: number) => (
-<tr key={index}>
-  <td style={td}>{item.productName}</td>
-
-  <td style={td}>
-    {item.totalStock <= 0 ? "⚠️ Out of Stock" : item.totalStock}
-  </td>
-
-  <td style={td}>{item.totalSales}</td>
-
-  <td style={td}>
-    {new Date(item.lastUpdated).toLocaleString()}
-  </td>
-  <td style={td}>
-  {item.totalStock <= 0 && "🔴 Out"}
-  {item.totalStock > 0 && item.totalStock < 5 && "🟡 Low"}
-  {item.totalStock >= 5 && "🟢 Good"}
-</td>
-</tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-)}
-    </div>
-  );
+  return <>{children}</>;
 };
 
-export default Inventory;
+export default ProtectedRoute;
